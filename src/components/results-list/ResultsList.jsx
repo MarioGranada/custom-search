@@ -1,5 +1,5 @@
-import * as React from "react";
-import SingleResultItem from "./single-result-item/SingleResultItem";
+import * as React from 'react';
+import SingleResultItem from './single-result-item/SingleResultItem';
 
 // data item model:
 // type DataItem = {

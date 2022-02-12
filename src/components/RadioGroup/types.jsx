@@ -1,4 +1,4 @@
 export type RadioButtonProp = {
   label: string,
-  value: string,
+  value: string
 };

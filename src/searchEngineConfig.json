@@ -1,0 +1,28 @@
+{
+  "engines": {
+    "google": {
+      "method": "GET",
+      "displayName": "Google",
+      "value": "google-bing",
+      "baseURL": "https://www.googleapis.com/customsearch/v1?",
+      "queryParams": {},
+      "headers": {}
+    },
+    "bing": {
+      "method": "GET",
+      "displayName": "Bing",
+      "value": "bing",
+      "baseURL": "https://api.bing.microsoft.com/v7.0/custom/search?",
+      "queryParams": {},
+      "headers": {}
+    }
+  },
+  "combinations": {
+    "google-bing": {
+      "method": "GET",
+      "displayName": "Google & Bing",
+      "value": "google-bing",
+      "combinedEngines": ["google", "bing"]
+    }
+  }
+}

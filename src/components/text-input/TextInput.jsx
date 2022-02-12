@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 
 const TextInput = ({ onChange, placeholder, value, disabled }): React.Node => (
   <div>

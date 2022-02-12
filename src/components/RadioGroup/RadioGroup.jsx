@@ -1,6 +1,6 @@
-import * as React from "react";
-import RadioButton from "./RadioButton/RadioButton";
-import { RadioButtonProp } from "./types";
+import * as React from 'react';
+import RadioButton from './RadioButton/RadioButton';
+import { RadioButtonProp } from './types';
 
 // option model:
 // type RadioButtonProp = {
@@ -15,7 +15,7 @@ const RadioGroup = ({
   onChange,
   disabled,
   selected,
-  groupLabel,
+  groupLabel
 }: RadioButtonProp): React.Node => (
   <div>
     <h2>{groupLabel}</h2>

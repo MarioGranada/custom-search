@@ -1,0 +1,4 @@
+export const LOAD_RESULTS = 'LOAD_RESULTS';
+export const UPDATE_RESULTS = 'UPDATE_RESULTS';
+export const CLEAR_RESULTS = 'CLEAR_RESULTS';
+export const MERGE_RESULTS = 'MERGE_RESULTS';
