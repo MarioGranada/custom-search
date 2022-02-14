@@ -1,6 +1,12 @@
-import * as React from 'react';
+import { type Node } from 'react';
 
-const Button = ({ children, onClick, disabled }): React.Node => (
+type Props = {
+  disabled?: boolean,
+  children: Node,
+  onClick: (event) => void
+};
+
+const Button = ({ children, onClick, disabled = false }: Props): Node => (
   <div>
     <button type="button" onClick={onClick} disabled={disabled}>
       {children}

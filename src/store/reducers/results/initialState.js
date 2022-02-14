@@ -1,7 +1,8 @@
 const initialState = {
   query: '',
   currentEngine: '',
-  items: []
+  items: [],
+  totalResults: 0
 };
 
 export default initialState;

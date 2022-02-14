@@ -4,16 +4,16 @@ export const loadResults = () => ({
   type: actionTypes.LOAD_RESULTS
 });
 
-export const updateResults = (newItems) => ({
+export const updateResults = (payload) => ({
   type: actionTypes.UPDATE_RESULTS,
-  payload: { items: newItems }
+  payload
 });
 
 export const clearResults = () => ({
-  tyoe: actionTypes.CLEAR_RESULTS
+  type: actionTypes.CLEAR_RESULTS
 });
 
-export const mergeResults = (items) => ({
+export const mergeResults = (payload) => ({
   type: actionTypes.MERGE_RESULTS,
-  payload: { items }
+  payload
 });

@@ -2,18 +2,18 @@
   "engines": {
     "google": {
       "method": "GET",
-      "displayName": "Google",
-      "value": "google-bing",
+      "label": "Google",
+      "value": "google",
       "baseURL": "https://www.googleapis.com/customsearch/v1?",
       "totalResults": "searchInformation.totalResults",
       "itemsPath": "items",
-      "itemProps": ["htmlTitle:title", "htmlSnippet:overview", "link:url", "displayLink:displayUrl", "cacheId:id", "kind"],
+      "itemProps": ["htmlTitle:title", "htmlSnippet:overview", "link:url", "displayLink:displayUrl", "link:id", "kind"],
       "queryParams": {},
       "headers": {}
     },
     "bing": {
       "method": "GET",
-      "displayName": "Bing",
+      "label": "Bing",
       "value": "bing",
       "baseURL": "https://api.bing.microsoft.com/v7.0/custom/search?",
       "totalResults": "webPages.totalEstimatedMatches",
@@ -26,7 +26,7 @@
   "combinations": {
     "google-bing": {
       "method": "GET",
-      "displayName": "Google & Bing",
+      "label": "Google & Bing",
       "value": "google-bing",
       "combinedEngines": ["google", "bing"]
     }

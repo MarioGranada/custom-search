@@ -21,7 +21,7 @@ const prepareDataBeforeStore = (engine, data) => {
       return simplifiedItem;
     });
   }
-  return { totalResults, items: simplifiedItemsList };
+  return { totalResults: parseInt(totalResults, 10), items: simplifiedItemsList };
 };
 
 export default prepareDataBeforeStore;

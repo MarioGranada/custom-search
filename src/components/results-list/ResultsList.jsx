@@ -1,20 +1,15 @@
-import * as React from 'react';
+import { type Node } from 'react';
 import SingleResultItem from './single-result-item/SingleResultItem';
+import DataItem from './types';
 
-// data item model:
-// type DataItem = {
-//     title: String,
-//     overview: React.Node,
-// }
+type Props = {
+  resultsDataItems: Array<DataItem>
+};
 
-const ResultsList = ({ resultsDataItems }): React.Node => (
+const ResultsList = ({ resultsDataItems }: Props): Node => (
   <div>
-    {resultsDataItems.map((item, index) => (
-      <SingleResultItem
-        title={item.title}
-        overview={item.overview}
-        key={`${item.title}-${index}`}
-      />
+    {resultsDataItems.map((item: DataItem) => (
+      <SingleResultItem title={item.title} overview={item.overview} key={item.id} />
     ))}
   </div>
 );
