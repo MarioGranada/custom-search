@@ -6,7 +6,7 @@ import ResultsList from '../../components/results-list/ResultsList';
 import TextInput from '../../components/text-input/TextInput';
 
 import actions from '../../store/actions';
-import { prepareSearch } from '../../utils';
+import { prepareDataBeforeStore, prepareSearch } from '../../utils';
 
 type Props = {
   header?: Node
@@ -21,38 +21,23 @@ const SearchScreen = ({ header }: Props): Node => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    async function fetchMissions() {
+    async function fetchSearchResults() {
       try {
-        const { searchURL, method, headers } = prepareSearch('bing', 'immiland');
+        const { searchURL, method, headers } = prepareSearch(selected, 'immiland');
         // setIsLoading(true);
         const response = await fetch(searchURL, { method, headers });
         const jsonResponse = await response.json();
-        // Google
-        // dispatch(
-        //   actions.updateResults(
-        //     jsonResponse.items.map((item) => ({
-        //       title: item.htmlTitle,
-        //       overview: item.htmlSnippet
-        //     }))
-        //   )
-        // );
 
-        // Bing
-        dispatch(
-          actions.updateResults(
-            jsonResponse.webPages.value.map((item) => ({
-              title: item.name,
-              overview: item.snippet
-            }))
-          )
-        );
+        const resultsTest = prepareDataBeforeStore(selected, jsonResponse);
+
+        dispatch(actions.updateResults(resultsTest.items));
       } catch (error) {
         console.log(error);
       } finally {
         // setIsLoading(false);
       }
     }
-    fetchMissions();
+    fetchSearchResults();
   }, [dispatch]);
 
   return (

@@ -5,6 +5,9 @@
       "displayName": "Google",
       "value": "google-bing",
       "baseURL": "https://www.googleapis.com/customsearch/v1?",
+      "totalResults": "searchInformation.totalResults",
+      "itemsPath": "items",
+      "itemProps": ["htmlTitle:title", "htmlSnippet:overview", "link:url", "displayLink:displayUrl", "cacheId:id", "kind"],
       "queryParams": {},
       "headers": {}
     },
@@ -13,6 +16,9 @@
       "displayName": "Bing",
       "value": "bing",
       "baseURL": "https://api.bing.microsoft.com/v7.0/custom/search?",
+      "totalResults": "webPages.totalEstimatedMatches",
+      "itemsPath": "webPages.value",
+      "itemProps": ["name:title", "snippet:overview", "id", "url", "displayUrl"],
       "queryParams": {},
       "headers": {}
     }

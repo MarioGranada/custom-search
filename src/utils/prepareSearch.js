@@ -1,30 +1,11 @@
 import initConfig from '../searchEngineConfig.json';
+import enginesData from './loadEngines';
 
 const loadEngineConfig = (engine) => {
-  switch (engine) {
-    case 'google':
-      return {
-        ...initConfig.engines[engine],
-        queryParams: {
-          key: process.env.REACT_APP_GOOGLE_API_KEY,
-          cx: process.env.REACT_APP_GOOGLE_CX
-        },
-        headers: {}
-      };
-    case 'bing':
-      return {
-        ...initConfig.engines[engine],
-        queryParams: {
-          customconfig: process.env.REACT_APP_BING_CUSTOM_CONFIG_ID,
-          mkt: 'en-US'
-        },
-        headers: {
-          'Ocp-Apim-Subscription-Key': process.env.REACT_APP_BING_SUBSCRIPTION_KEY
-        }
-      };
-    default:
-      return {};
-  }
+  return {
+    ...initConfig.engines[engine],
+    ...enginesData.engines[engine]
+  };
 };
 
 const prepareSearch = (engine, query) => {
