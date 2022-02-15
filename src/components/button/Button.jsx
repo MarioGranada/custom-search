@@ -1,5 +1,5 @@
 import * as React from 'react';
-import ButtonMui from '@mui/material/Button';
+import { Box, Button as ButtonMui } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 
 type Props = {
@@ -9,11 +9,11 @@ type Props = {
 };
 
 const Button = ({ children, onClick, disabled = false }: Props): React.Node => (
-  <div>
+  <Box>
     <ButtonMui variant="contained" onClick={onClick} disabled={disabled} endIcon={<SearchIcon />}>
       {children}
     </ButtonMui>
-  </div>
+  </Box>
 );
 
 export default Button;

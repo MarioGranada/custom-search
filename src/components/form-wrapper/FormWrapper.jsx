@@ -12,10 +12,11 @@ const FormWrapper = ({ children, onKeyDown }: Props): React.Node => (
     noValidate
     autoComplete="off"
     sx={{
-      display: 'inline-flex',
       gap: '1rem',
-      alignItems: 'center'
+      alignItems: 'center',
+      width: '100%'
     }}
+    display={{ xs: 'grid', sm: 'inline-flex' }}
     onKeyDown={onKeyDown}>
     {children}
   </Box>

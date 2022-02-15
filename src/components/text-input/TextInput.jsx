@@ -10,7 +10,7 @@ type Props = {
 
 const TextInput = ({ onChange, placeholder, value, disabled }: Props): React.Node => {
   return (
-    <Box display={{ xs: 'flex' }} minWidth={{ xs: '100%', sm: 'auto' }}>
+    <Box display={{ xs: 'flex' }} minWidth={{ xs: '100%', sm: '50%' }}>
       <TextField
         id="outlined-search"
         label="Search field"
