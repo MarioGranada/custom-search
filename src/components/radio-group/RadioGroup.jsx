@@ -1,5 +1,5 @@
-import { type Node } from 'react';
-import RadioButton from './RadioButton/RadioButton';
+import * as React from 'react';
+import RadioButton from './radio-button/RadioButton';
 import { RadioButtonProp } from './types';
 
 type Props = {
@@ -20,7 +20,7 @@ const RadioGroup = ({
   disabled,
   selected,
   groupLabel
-}: Props): Node => (
+}: Props): React.Node => (
   <div>
     <h2>{groupLabel}</h2>
     {options.map((option, index) => (

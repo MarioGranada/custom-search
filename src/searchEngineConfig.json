@@ -7,7 +7,7 @@
       "baseURL": "https://www.googleapis.com/customsearch/v1?",
       "totalResults": "searchInformation.totalResults",
       "itemsPath": "items",
-      "itemProps": ["htmlTitle:title", "htmlSnippet:overview", "link:url", "displayLink:displayUrl", "link:id", "kind"],
+      "itemProps": ["title", "snippet:overview", "link:url", "displayLink:displayUrl", "link:id", "kind"],
       "queryParams": {},
       "headers": {}
     },

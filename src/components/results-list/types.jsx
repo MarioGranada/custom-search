@@ -1,7 +1,9 @@
-import { type Node } from 'react';
+import * as React from 'react';
 
 export type DataItem = {
+  id: string,
   title: string,
-  overview: Node,
-  id: string
+  overview: React.Node,
+  url: string,
+  displayUrl: string
 };

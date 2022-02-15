@@ -1,9 +1,9 @@
-import { useState, type Node, useCallback, useMemo } from 'react';
+import * as React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import Button from '../../components/button/Button';
-import Dropdown from '../../components/Dropdown/Dropdown';
-import ResultsList from '../../components/results-list/ResultsList';
-import TextInput from '../../components/text-input/TextInput';
+import { Box, Container, LinearProgress, Typography } from '@mui/material';
+
+import { Button, Dropdown, FormWrapper, ResultsList, TextInput, TopBar } from '../../components';
+
 import enginesList from '../../searchEngineConfig.json';
 
 import actions from '../../store/actions';
@@ -13,15 +13,15 @@ type Props = {
   header?: Node
 };
 
-const SearchScreen = ({ header }: Props): Node => {
-  const [selected, setSelected] = useState('google');
-  const [textValue, setTextValue] = useState('');
+const SearchScreen = ({ header }: Props): React.Node => {
+  const [selected, setSelected] = React.useState('google');
+  const [textValue, setTextValue] = React.useState('');
   const formState = useSelector((state) => state.form);
   const resultsState = useSelector((state) => state.results);
 
   const dispatch = useDispatch();
 
-  const onFetchResults = useCallback(
+  const onFetchResults = React.useCallback(
     (selectedEngine: string, query: string) => {
       async function fetchSearchResults(selectedEngine: string) {
         try {
@@ -44,21 +44,21 @@ const SearchScreen = ({ header }: Props): Node => {
   );
 
   // add event Syntetic type
-  const onSelect = useCallback(
+  const onSelect = React.useCallback(
     (event) => {
       setSelected(event.target.value);
     },
     [setSelected]
   );
 
-  const onTextChange = useCallback(
+  const onTextChange = React.useCallback(
     (event) => {
       setTextValue(event.target.value);
     },
     [setTextValue]
   );
 
-  const onSubmit = useCallback(() => {
+  const onSubmit = React.useCallback(() => {
     dispatch(actions.clearResults());
     dispatch(actions.setIsLoading(true));
     const selectedEngines = selected.split('-');
@@ -67,7 +67,7 @@ const SearchScreen = ({ header }: Props): Node => {
     });
   }, [selected, textValue]);
 
-  const enginesListDisplayItems = useMemo(() => {
+  const enginesListDisplayItems = React.useMemo(() => {
     const engines = { ...enginesList.engines, ...enginesList.combinations };
     return Object.entries(engines).map(([, { label, value }]) => ({
       label,
@@ -75,38 +75,46 @@ const SearchScreen = ({ header }: Props): Node => {
     }));
   }, [enginesList]);
 
+  const onKeyDown = React.useCallback(
+    (event) => {
+      if (event.key === 'Enter') {
+        onSubmit();
+      }
+    },
+    [onSubmit]
+  );
+
   return (
-    <>
-      <h1>{header}</h1>
-      <TextInput
-        onChange={onTextChange}
-        // to config file
-        placeholder="Type your query"
-      />
-      <Button onClick={onSubmit} disabled={textValue.length < 3 || formState.isLoading}>
-        Search
-      </Button>
-      <Dropdown
-        options={enginesListDisplayItems}
-        // to config file
-        groupName="search-engines"
-        // to config file
-        groupLabel="Search Engines"
-        onChange={onSelect}
-        selected={selected}
-      />
-      {formState.isLoading ? (
-        <div>Loading...</div>
-      ) : (
-        <div>
-          <div>
-            <span>Total Results: </span>
-            {resultsState.totalResults}
-          </div>
-          <ResultsList resultsDataItems={resultsState.items} />
-        </div>
-      )}
-    </>
+    <Container maxWidth="lg">
+      <Box>
+        <Typography variant="h1" sx={{ my: '1rem' }}>
+          {header}
+        </Typography>
+        <TopBar>
+          <FormWrapper onKeyDown={onKeyDown}>
+            <TextInput
+              onChange={onTextChange}
+              // to config file
+              placeholder="Type your query"
+            />
+            <Dropdown
+              options={enginesListDisplayItems}
+              // to config file
+              groupName="search-engines"
+              // to config file
+              groupLabel="Search Engines"
+              onChange={onSelect}
+              selected={selected}
+            />
+            <Button onClick={onSubmit} disabled={textValue.length < 3 || formState.isLoading}>
+              Search
+            </Button>
+          </FormWrapper>
+        </TopBar>
+
+        {formState.isLoading ? <LinearProgress /> : <ResultsList {...resultsState} />}
+      </Box>
+    </Container>
   );
 };
 

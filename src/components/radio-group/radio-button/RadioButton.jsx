@@ -1,4 +1,4 @@
-import { type Node } from 'react';
+import * as React from 'react';
 import { RadioButtonProp } from '../types';
 
 const RadioButton = ({
@@ -9,7 +9,7 @@ const RadioButton = ({
   onSelect,
   groupName,
   disabled
-}: RadioButtonProp): Node => (
+}: RadioButtonProp): React.Node => (
   <div>
     <label>{label}</label>
     <input
