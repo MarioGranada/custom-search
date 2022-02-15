@@ -4,7 +4,7 @@ function App() {
   return (
     <>
       {/* header text content  to config file */}
-      <SearchScreen header={<div>this is my custom header</div>} />
+      <SearchScreen header={<div>Custom Search</div>} />
     </>
   );
 }

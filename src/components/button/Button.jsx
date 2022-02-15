@@ -1,4 +1,6 @@
 import { type Node } from 'react';
+import ButtonMui from '@mui/material/Button';
+import SearchIcon from '@mui/icons-material/Search';
 
 type Props = {
   disabled?: boolean,
@@ -8,9 +10,9 @@ type Props = {
 
 const Button = ({ children, onClick, disabled = false }: Props): Node => (
   <div>
-    <button type="button" onClick={onClick} disabled={disabled}>
+    <ButtonMui variant="contained" onClick={onClick} disabled={disabled} endIcon={<SearchIcon />}>
       {children}
-    </button>
+    </ButtonMui>
   </div>
 );
 

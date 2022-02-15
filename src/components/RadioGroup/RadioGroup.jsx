@@ -2,6 +2,16 @@ import { type Node } from 'react';
 import RadioButton from './RadioButton/RadioButton';
 import { RadioButtonProp } from './types';
 
+type Props = {
+  id: string,
+  groupName: string,
+  options: Array<RadioButtonProp>,
+  disabled?: boolean,
+  selected?: string,
+  groupLabel: string,
+  onChange: (event) => void
+};
+
 const RadioGroup = ({
   groupName,
   id,
@@ -10,7 +20,7 @@ const RadioGroup = ({
   disabled,
   selected,
   groupLabel
-}: RadioButtonProp): Node => (
+}: Props): Node => (
   <div>
     <h2>{groupLabel}</h2>
     {options.map((option, index) => (

@@ -1,7 +1,7 @@
 import { useState, type Node, useCallback, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Button from '../../components/button/Button';
-import RadioGroup from '../../components/RadioGroup/RadioGroup';
+import Dropdown from '../../components/Dropdown/Dropdown';
 import ResultsList from '../../components/results-list/ResultsList';
 import TextInput from '../../components/text-input/TextInput';
 import enginesList from '../../searchEngineConfig.json';
@@ -78,16 +78,15 @@ const SearchScreen = ({ header }: Props): Node => {
   return (
     <>
       <h1>{header}</h1>
-      <h2>{formState.inputQuery} </h2>
-
       <TextInput
         onChange={onTextChange}
         // to config file
         placeholder="Type your query"
       />
-      {textValue}
-      <Button onClick={onSubmit}>Search</Button>
-      <RadioGroup
+      <Button onClick={onSubmit} disabled={textValue.length < 3 || formState.isLoading}>
+        Search
+      </Button>
+      <Dropdown
         options={enginesListDisplayItems}
         // to config file
         groupName="search-engines"

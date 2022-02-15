@@ -1,4 +1,5 @@
 import { type Node } from 'react';
+import TextField from '@mui/material/TextField';
 
 type Props = {
   onChange: (event) => void,
@@ -9,8 +10,10 @@ type Props = {
 
 const TextInput = ({ onChange, placeholder, value, disabled }: Props): Node => (
   <div>
-    <input
-      type="text"
+    <TextField
+      id="outlined-search"
+      label="Search field"
+      type="search"
       placeholder={placeholder}
       onChange={onChange}
       value={value}

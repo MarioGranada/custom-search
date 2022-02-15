@@ -6,9 +6,8 @@ const propByPath = (path, dataObj, separator = '.') => {
 };
 
 const prepareDataBeforeStore = (engine, data) => {
-  const { totalResults: totalSearchResults, itemsPath, itemProps } = initConfig.engines[engine];
-  console.log(totalSearchResults, itemsPath, itemProps);
-  const totalResults = propByPath(totalSearchResults, data);
+  const { totalResults: totalSearchResultsPath, itemsPath, itemProps } = initConfig.engines[engine];
+  const totalResults = propByPath(totalSearchResultsPath, data);
   const itemsList = propByPath(itemsPath, data);
   let simplifiedItemsList = [];
   if (itemsList && itemsList.length > 0) {
