@@ -1,6 +1,7 @@
-import * as formActions from './form';
-import * as resultsActions from './results';
+import formActions from './form';
+import resultsActions from './results';
 
-const actions = { ...formActions, ...resultsActions };
-
-export default actions;
+export default {
+  ...formActions,
+  ...resultsActions
+};

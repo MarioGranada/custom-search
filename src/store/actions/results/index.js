@@ -1,19 +1,26 @@
 import { resultsActionTypes as actionTypes } from '../../actionTypes';
 
-export const loadResults = () => ({
+const loadResults = () => ({
   type: actionTypes.LOAD_RESULTS
 });
 
-export const updateResults = (payload) => ({
+const updateResults = (payload) => ({
   type: actionTypes.UPDATE_RESULTS,
   payload
 });
 
-export const clearResults = () => ({
+const clearResults = () => ({
   type: actionTypes.CLEAR_RESULTS
 });
 
-export const mergeResults = (payload) => ({
+const mergeResults = (payload) => ({
   type: actionTypes.MERGE_RESULTS,
   payload
 });
+
+export default {
+  loadResults,
+  updateResults,
+  clearResults,
+  mergeResults
+};

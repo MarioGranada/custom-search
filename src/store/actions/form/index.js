@@ -1,15 +1,26 @@
 import { formActionTypes as actionTypes } from '../../actionTypes';
 
-export const updateForm = (formValues) => ({
+const loadForm = () => ({
+  type: actionTypes.LOAD_FORM
+});
+
+const updateForm = (formValues) => ({
   type: actionTypes.UPDATE_FORM,
   payload: { ...formValues }
 });
 
-export const clearForm = () => ({
-  tyoe: actionTypes.CLEAR_FORM
+const clearForm = () => ({
+  type: actionTypes.CLEAR_FORM
 });
 
-export const setIsLoading = (isLoading) => ({
-  type: actionTypes.SET_LOADING,
+const setIsLoading = (isLoading) => ({
+  type: actionTypes.SET_IS_LOADING,
   payload: isLoading
 });
+
+export default {
+  loadForm,
+  updateForm,
+  clearForm,
+  setIsLoading
+};
