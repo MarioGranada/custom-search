@@ -8,7 +8,10 @@ const SingleResultItem = ({ title, overview, url, displayUrl }: DataItem): React
     <Link href={url} underline="hover" target="_blank" rel="noopener">
       <Typography variant="h6">{title}</Typography>
     </Link>
-    <Typography color="text.secondary">{displayUrl}</Typography>
+    <Link href={url} underline="hover" target="_blank" rel="noopener">
+      <Typography color="text.secondary">{displayUrl}</Typography>
+    </Link>
+
     <Typography variant="body2">{overview}</Typography>
     <Divider sx={{ mt: '1rem' }} />
   </Box>
