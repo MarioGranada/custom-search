@@ -15,7 +15,7 @@ type Props = {
 const Dropdown = ({ id, onChange, options, disabled, selected, groupLabel }: Props): React.Node => (
   <Box sx={{ minWidth: 120 }}>
     <FormControl fullWidth>
-      <InputLabel id={`${id}-label`}>{groupLabel} </InputLabel>
+      <InputLabel id={`${id}-label`}>{groupLabel}</InputLabel>
       <Select
         labelId={`${id}-label`}
         id={id}
