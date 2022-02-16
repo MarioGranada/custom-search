@@ -3,11 +3,6 @@ import resultsReducer from '.';
 import actions from '../../actions';
 import { resultsMock } from '../../../mocks';
 
-export const LOAD_RESULTS = 'LOAD_RESULTS';
-export const UPDATE_RESULTS = 'UPDATE_RESULTS';
-export const CLEAR_RESULTS = 'CLEAR_RESULTS';
-export const MERGE_RESULTS = 'MERGE_RESULTS';
-
 describe('Results [Reducer]', () => {
   it('should return the state by default', () => {
     expect(resultsReducer(undefined, {})).toEqual(initialState);
