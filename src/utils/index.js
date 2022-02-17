@@ -1,2 +1,7 @@
-export { default as prepareDataBeforeStore } from './prepareDataBeforeStore';
-export { default as prepareSearch } from './prepareSearch';
+import prepareDataBeforeStore from './prepareDataBeforeStore';
+import prepareSearch from './prepareSearch';
+
+export default {
+  prepareDataBeforeStore,
+  prepareSearch
+};

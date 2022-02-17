@@ -25,7 +25,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix",
     "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
-    "prettify": "eslint --fix && prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc"
+    "prettify": "eslint --fix && prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
+    "printCoverage": "react-scripts test --coverage --watchAll"
   },
   "eslintConfig": {
     "extends": [

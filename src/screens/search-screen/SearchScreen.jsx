@@ -7,7 +7,7 @@ import { Button, Dropdown, FormWrapper, ResultsList, TextInput, TopBar } from '.
 import enginesList from '../../searchEngineConfig.json';
 
 import actions from '../../store/actions';
-import { prepareDataBeforeStore, prepareSearch } from '../../utils';
+import utils from '../../utils';
 
 type Props = {
   header?: Node
@@ -25,11 +25,14 @@ const SearchScreen = ({ header }: Props): React.Node => {
     (selectedEngine: string, query: string) => {
       async function fetchSearchResults(selectedEngine: string) {
         try {
-          const { searchURL, method, headers } = prepareSearch(selectedEngine, query);
+          const { searchURL, method, headers } = utils.prepareSearch(selectedEngine, query);
           const response = await fetch(searchURL, { method, headers });
           const jsonResponse = await response.json();
 
-          const { totalResults, items } = prepareDataBeforeStore(selectedEngine, jsonResponse);
+          const { totalResults, items } = utils.prepareDataBeforeStore(
+            selectedEngine,
+            jsonResponse
+          );
 
           dispatch(actions.mergeResults({ totalResults, items }));
         } catch (error) {
@@ -96,6 +99,7 @@ const SearchScreen = ({ header }: Props): React.Node => {
               onChange={onTextChange}
               // to config file
               placeholder="Type your query"
+              value={textValue}
             />
             <Dropdown
               options={enginesListDisplayItems}
