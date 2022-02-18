@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Box, Container, LinearProgress, Typography } from '@mui/material';
+import { FormattedMessage } from 'react-intl';
 
 import { Button, Dropdown, FormWrapper, ResultsList, TextInput, TopBar } from '../../components';
 
@@ -9,11 +10,7 @@ import enginesList from '../../searchEngineConfig.json';
 import actions from '../../store/actions';
 import utils from '../../utils';
 
-type Props = {
-  header?: Node
-};
-
-const SearchScreen = ({ header }: Props): React.Node => {
+const SearchScreen = (): React.Node => {
   const [selected, setSelected] = React.useState('google');
   const [textValue, setTextValue] = React.useState('');
   const formState = useSelector((state) => state.form);
@@ -91,27 +88,33 @@ const SearchScreen = ({ header }: Props): React.Node => {
     <Container maxWidth="lg">
       <Box>
         <Typography variant="h1" sx={{ my: '1rem' }}>
-          {header}
+          <FormattedMessage description="app header" id="screens.search.header" />
         </Typography>
         <TopBar>
           <FormWrapper onKeyDown={onKeyDown}>
-            <TextInput
-              onChange={onTextChange}
-              // to config file
-              placeholder="Type your query"
-              value={textValue}
-            />
-            <Dropdown
-              options={enginesListDisplayItems}
-              // to config file
-              groupName="search-engines"
-              // to config file
-              groupLabel="Search Engines"
-              onChange={onSelect}
-              selected={selected}
-            />
+            <FormattedMessage id="screens.search.textInputPlaceholder">
+              {(formattedString) => (
+                <TextInput
+                  onChange={onTextChange}
+                  placeholder={formattedString[0]}
+                  value={textValue}
+                />
+              )}
+            </FormattedMessage>
+            <FormattedMessage id="screens.search.dropdownLabel">
+              {(formattedString) => (
+                <Dropdown
+                  options={enginesListDisplayItems}
+                  groupName="search-engines"
+                  groupLabel={formattedString[0]}
+                  onChange={onSelect}
+                  selected={selected}
+                />
+              )}
+            </FormattedMessage>
+
             <Button onClick={onSubmit} disabled={textValue.length < 3 || formState.isLoading}>
-              Search
+              <FormattedMessage id="screens.search.searchButtonLabel" />
             </Button>
           </FormWrapper>
         </TopBar>

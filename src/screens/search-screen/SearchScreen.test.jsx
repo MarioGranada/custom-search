@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { IntlProvider } from 'react-intl';
 import { Provider } from 'react-redux';
 import { waitFor } from '@testing-library/react';
 import configureStore from 'redux-mock-store';
@@ -12,6 +13,7 @@ import { Button, Dropdown, FormWrapper, ResultsList, TextInput, TopBar } from '.
 import actions from '../../store/actions';
 import SearchScreen from './SearchScreen';
 import utils from '../../utils';
+import English from '../../lang/en.json';
 
 const mockStore = configureStore();
 
@@ -38,7 +40,9 @@ describe('Search [Screen]', () => {
   beforeEach(() => {
     wrapper = mount(
       <Provider store={store}>
-        <SearchScreen>{children}</SearchScreen>
+        <IntlProvider locale="en" messages={English}>
+          <SearchScreen>{children}</SearchScreen>
+        </IntlProvider>
       </Provider>
     );
   });
@@ -218,7 +222,9 @@ describe('Search [Screen]', () => {
     });
     wrapper = mount(
       <Provider store={store}>
-        <SearchScreen>{children}</SearchScreen>
+        <IntlProvider locale="en" messages={English}>
+          <SearchScreen>{children}</SearchScreen>
+        </IntlProvider>
       </Provider>
     );
 

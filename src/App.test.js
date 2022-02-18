@@ -1,4 +1,5 @@
 import React from 'react';
+import { IntlProvider } from 'react-intl';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { render, within } from '@testing-library/react';
@@ -6,6 +7,7 @@ import { mount } from 'enzyme';
 
 import App from './App';
 import SearchScreen from './screens/search-screen/SearchScreen';
+import English from './lang/en.json';
 
 const mockStore = configureStore();
 
@@ -28,7 +30,9 @@ describe('App ', () => {
   beforeEach(() => {
     wrapper = mount(
       <Provider store={store}>
-        <App />
+        <IntlProvider locale="en" messages={English}>
+          <App />
+        </IntlProvider>
       </Provider>
     );
   });

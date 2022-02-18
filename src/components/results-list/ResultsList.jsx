@@ -1,6 +1,7 @@
 import * as React from 'react';
 import SingleResultItem from './single-result-item/SingleResultItem';
 import DataItem from './types';
+import { FormattedMessage } from 'react-intl';
 
 type Props = {
   items: Array<DataItem>,
@@ -10,7 +11,10 @@ type Props = {
 const ResultsList = ({ items, totalResults }: Props): React.Node => (
   <div>
     <div>
-      <span>Total Results: </span>
+      <span>
+        <FormattedMessage id="components.resultsList.totalResults" />:{' '}
+      </span>
+
       {totalResults}
     </div>
     {items.map((item: DataItem) => (

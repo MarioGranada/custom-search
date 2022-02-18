@@ -1,14 +1,18 @@
 import React from 'react';
 import { mount, shallow } from 'enzyme';
+import { IntlProvider } from 'react-intl';
 import ResutlsList from './ResultsList';
 import SingleResultItem from './single-result-item/SingleResultItem';
 import { resultsMock } from '../../mocks';
+import English from '../../lang/en.json';
 
 describe('ResultsList [Component]', () => {
   let wrapper;
   beforeEach(() => {
     wrapper = mount(
-      <ResutlsList items={resultsMock.items} totalResults={resultsMock.items.length} />
+      <IntlProvider locale="en" messages={English}>
+        <ResutlsList items={resultsMock.items} totalResults={resultsMock.items.length} />
+      </IntlProvider>
     );
   });
 
@@ -18,8 +22,8 @@ describe('ResultsList [Component]', () => {
   });
 
   it('should have the next props: items, totalResults', () => {
-    expect(wrapper.props().items).toBeTruthy();
-    expect(wrapper.props().totalResults).toBeGreaterThanOrEqual(0);
+    expect(wrapper.find(ResutlsList).props().items).toBeTruthy();
+    expect(wrapper.find(ResutlsList).props().totalResults).toBeGreaterThanOrEqual(0);
   });
 
   it('should have a total results label displaying the total results value', () => {

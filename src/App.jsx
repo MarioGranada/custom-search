@@ -5,8 +5,7 @@ function App() {
   return (
     <>
       <CssBaseline />
-      {/* header text content  to config file */}
-      <SearchScreen header={<div>Custom Search</div>} />
+      <SearchScreen />
     </>
   );
 }

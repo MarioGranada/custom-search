@@ -1,0 +1,7 @@
+{
+    "screens.search.header" : "Custom Search",
+    "screens.search.textInputPlaceholder": "Type your query",
+    "screens.search.dropdownLabel": "Search engines",
+    "screens.search.searchButtonLabel": "Search",
+    "components.resultsList.totalResults": "Total Results"
+}
