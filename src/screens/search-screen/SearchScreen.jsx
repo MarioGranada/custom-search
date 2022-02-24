@@ -3,7 +3,15 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Box, Container, LinearProgress, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 
-import { Button, Dropdown, FormWrapper, ResultsList, TextInput, TopBar } from '../../components';
+import {
+  Button,
+  Dropdown,
+  FormWrapper,
+  ResultsList,
+  TextInput,
+  TopBar,
+  Pagination
+} from '../../components';
 
 import enginesList from '../../searchEngineConfig.json';
 
@@ -15,14 +23,15 @@ const SearchScreen = (): React.Node => {
   const [textValue, setTextValue] = React.useState('');
   const formState = useSelector((state) => state.form);
   const resultsState = useSelector((state) => state.results);
+  const [currentPage, setCurrentPage] = React.useState(0);
 
   const dispatch = useDispatch();
 
   const onFetchResults = React.useCallback(
-    (selectedEngine: string, query: string) => {
-      async function fetchSearchResults(selectedEngine: string) {
+    (selectedEngine: string, query: string, offset?: number) => {
+      async function fetchSearchResults(selectedEngine: string, query: string, offset?: number) {
         try {
-          const { searchURL, method, headers } = utils.prepareSearch(selectedEngine, query);
+          const { searchURL, method, headers } = utils.prepareSearch(selectedEngine, query, offset);
           const response = await fetch(searchURL, { method, headers });
           const jsonResponse = await response.json();
 
@@ -38,9 +47,19 @@ const SearchScreen = (): React.Node => {
           dispatch(actions.setIsLoading(false));
         }
       }
-      fetchSearchResults(selectedEngine, query);
+      console.log('in here offset onfetchresutls', offset);
+      fetchSearchResults(selectedEngine, query, currentPage);
     },
     [dispatch]
+  );
+
+  const onPageChange = React.useCallback(
+    (event, value) => {
+      console.log('in here onPageChange', value);
+      setCurrentPage(value);
+      onSubmit();
+    },
+    [setCurrentPage, selected, currentPage, textValue]
   );
 
   // add event Syntetic type
@@ -63,9 +82,9 @@ const SearchScreen = (): React.Node => {
     dispatch(actions.setIsLoading(true));
     const selectedEngines = selected.split('-');
     selectedEngines.map((item) => {
-      onFetchResults(item, textValue);
+      onFetchResults(item, textValue, currentPage);
     });
-  }, [selected, textValue]);
+  }, [selected, textValue, currentPage]);
 
   const enginesListDisplayItems = React.useMemo(() => {
     const engines = { ...enginesList.engines, ...enginesList.combinations };
@@ -74,6 +93,14 @@ const SearchScreen = (): React.Node => {
       value
     }));
   }, [enginesList]);
+
+  const maxPagesResultsCount = React.useMemo(() => {
+    const selectedEngines = selected.split('-');
+    return selectedEngines.reduce(
+      (prev, current) => prev + parseInt(enginesList.engines[current].maxResults),
+      0
+    );
+  }, [selected]);
 
   const onKeyDown = React.useCallback(
     (event) => {
@@ -118,6 +145,13 @@ const SearchScreen = (): React.Node => {
             </Button>
           </FormWrapper>
         </TopBar>
+        {!formState.isLoading && resultsState.items.length && (
+          <Pagination
+            onChange={onPageChange}
+            currentPage={currentPage}
+            maxPages={maxPagesResultsCount}
+          />
+        )}
 
         {formState.isLoading ? <LinearProgress /> : <ResultsList {...resultsState} />}
       </Box>
