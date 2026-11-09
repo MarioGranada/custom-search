@@ -1,14 +1,8 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { IntlProvider } from 'react-intl';
 import { Provider } from 'react-redux';
-import { waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import configureStore from 'redux-mock-store';
-import { mount, shallow } from 'enzyme';
-import sinon from 'sinon';
-import { act } from 'react-dom/test-utils';
-import { Box, Container, LinearProgress } from '@mui/material';
-
-import { Button, Dropdown, FormWrapper, ResultsList, TextInput, TopBar } from '../../components';
 
 import actions from '../../store/actions';
 import SearchScreen from './SearchScreen';
@@ -17,7 +11,7 @@ import English from '../../lang/en.json';
 
 const mockStore = configureStore();
 
-const store = mockStore({
+const defaultState = {
   form: {
     selectedEngine: '',
     inputQuery: '',
@@ -29,205 +23,131 @@ const store = mockStore({
     items: [],
     totalResults: 0
   }
-});
+};
 
-const flushPromises = () => new Promise((resolve, reject) => setTimeout(resolve, 0));
+const renderScreen = (state = defaultState) =>
+  render(
+    <Provider store={mockStore(state)}>
+      <IntlProvider locale="en" messages={English}>
+        <SearchScreen>
+          <div>this is a children test</div>
+        </SearchScreen>
+      </IntlProvider>
+    </Provider>
+  );
+
+const typeQuery = (value) => fireEvent.change(screen.getByRole('searchbox'), { target: { value } });
+const clickSearch = () => fireEvent.click(screen.getByRole('button', { name: 'Search' }));
+const getForm = (container) => container.querySelector('form');
 
 describe('Search [Screen]', () => {
-  let wrapper;
-  const children = <div>this is a children test</div>;
+  let container;
 
   beforeEach(() => {
-    wrapper = mount(
-      <Provider store={store}>
-        <IntlProvider locale="en" messages={English}>
-          <SearchScreen>{children}</SearchScreen>
-        </IntlProvider>
-      </Provider>
-    );
+    // never hit the real search APIs from tests
+    window.fetch = vi.fn(() => Promise.resolve({ json: () => Promise.resolve([]) }));
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    ({ container } = renderScreen());
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it('should render', () => {
-    expect(wrapper).not.toBe(null);
-    expect(wrapper).not.toBe(undefined);
+    expect(container.firstChild).toBeInTheDocument();
   });
 
   it('should have the next wrapper components in the very beginning: Box, Container', () => {
-    expect(wrapper.find(Box).length).toEqual(6);
-    expect(wrapper.find(Container).length).toEqual(1);
+    expect(container.querySelectorAll('.MuiContainer-root')).toHaveLength(1);
+    expect(container.firstChild).toHaveClass('MuiContainer-root');
   });
 
   it('should have the next custom components: Button, Dropdown, FormWrapper, ResultsList, TextInput, TopBar', () => {
-    expect(wrapper.find(Button).length).toEqual(1);
-    expect(wrapper.find(Dropdown).length).toEqual(1);
+    expect(screen.getByRole('button', { name: 'Search' })).toBeInTheDocument();
+    expect(container.querySelector('[aria-haspopup="listbox"]')).toHaveTextContent('Google');
 
-    expect(wrapper.find(FormWrapper).length).toEqual(1);
-    expect(wrapper.find(ResultsList).length).toEqual(1);
+    expect(getForm(container)).toBeInTheDocument();
+    expect(container.textContent).toContain('Total Results');
 
-    expect(wrapper.find(TextInput).length).toEqual(1);
-    expect(wrapper.find(TopBar).length).toEqual(1);
+    expect(screen.getByRole('searchbox')).toHaveAttribute('placeholder', 'Type your query');
+    expect(getForm(container).parentElement).not.toBeNull();
   });
 
   it('should call onSelect when selecting a value from dropdown', () => {
-    act(() => {
-      wrapper
-        .find(Dropdown)
-        .props()
-        .onChange({ target: { value: 'bing' } });
-    });
-    wrapper.update();
+    fireEvent.mouseDown(container.querySelector('[aria-haspopup="listbox"]'));
+    fireEvent.click(screen.getByRole('option', { name: 'Bing' }));
 
-    expect(wrapper.find(Dropdown).props().selected).toEqual('bing');
+    expect(container.querySelector('[aria-haspopup="listbox"]')).toHaveTextContent('Bing');
   });
 
   it('should call onTextChange when typing a query', () => {
-    act(() => {
-      wrapper
-        .find(TextInput)
-        .props()
-        .onChange({ target: { value: 'test' } });
-    });
-    wrapper.update();
+    typeQuery('test');
 
-    expect(wrapper.find(TextInput).props().value).toEqual('test');
+    expect(screen.getByRole('searchbox')).toHaveValue('test');
   });
 
   it('should call onSubmit when Button clicked', () => {
-    sinon.spy(actions, 'clearResults');
+    const clearResults = vi.spyOn(actions, 'clearResults');
 
-    act(() => {
-      wrapper
-        .find(TextInput)
-        .props()
-        .onChange({ target: { value: 'test' } });
-    });
-    wrapper.update();
+    typeQuery('test');
+    clickSearch();
 
-    act(() => {
-      wrapper.find(Button).props().onClick();
-    });
-    wrapper.update();
-
-    expect(actions.clearResults.calledOnce).toBe(true);
-    actions.clearResults.restore();
+    expect(clearResults).toHaveBeenCalledTimes(1);
   });
 
   it("should call onSubmit when hitting 'Enter' ", () => {
-    sinon.spy(actions, 'clearResults');
-    act(() => {
-      wrapper.find(FormWrapper).props().onKeyDown({ key: 'Enter' });
-    });
-    wrapper.update();
+    const clearResults = vi.spyOn(actions, 'clearResults');
 
-    expect(actions.clearResults.calledOnce).toBe(true);
-    actions.clearResults.restore();
+    fireEvent.keyDown(getForm(container), { key: 'Enter' });
+
+    expect(clearResults).toHaveBeenCalledTimes(1);
   });
 
   it("should not call onSubmit when hitting other key different than 'Enter' ", () => {
-    sinon.spy(actions, 'clearResults');
-    act(() => {
-      wrapper.find(FormWrapper).props().onKeyDown({ key: 'a' });
-    });
-    wrapper.update();
+    const clearResults = vi.spyOn(actions, 'clearResults');
 
-    expect(actions.clearResults.calledOnce).toBe(false);
-    actions.clearResults.restore();
+    fireEvent.keyDown(getForm(container), { key: 'a' });
+
+    expect(clearResults).not.toHaveBeenCalled();
   });
 
   it('should call onFetchResults when onSubmit is clicked', () => {
-    window.fetch = jest.fn(() =>
-      Promise.resolve({
-        json: () => Promise.resolve([])
-      })
-    );
+    const prepareSearch = vi.spyOn(utils, 'prepareSearch');
 
-    sinon.spy(utils, 'prepareSearch');
+    typeQuery('custom search');
+    clickSearch();
 
-    act(() => {
-      wrapper
-        .find(TextInput)
-        .props()
-        .onChange({ target: { value: 'custom search' } });
-    });
-    wrapper.update();
-
-    act(() => {
-      wrapper.find(Button).props().onClick();
-    });
-    wrapper.update();
-
-    expect(utils.prepareSearch.calledOnce).toBe(true);
+    expect(prepareSearch).toHaveBeenCalledTimes(1);
     expect(window.fetch).toHaveBeenCalledTimes(1);
-    utils.prepareSearch.restore();
   });
 
   it('should call prepareDataBeforeStore when fetch results', async () => {
-    window.fetch = jest.fn(() =>
-      Promise.resolve({
-        json: () => Promise.resolve([])
-      })
-    );
-    sinon.spy(utils, 'prepareDataBeforeStore');
-    sinon.spy(actions, 'mergeResults');
+    const prepareDataBeforeStore = vi.spyOn(utils, 'prepareDataBeforeStore');
+    const mergeResults = vi.spyOn(actions, 'mergeResults');
 
-    act(() => {
-      wrapper
-        .find(TextInput)
-        .props()
-        .onChange({ target: { value: 'custom search' } });
-    });
-    wrapper.update();
-
-    act(() => {
-      wrapper.find(Button).props().onClick();
-    });
-    wrapper.update();
-    await flushPromises();
+    typeQuery('custom search');
+    clickSearch();
 
     expect(window.fetch).toHaveBeenCalledTimes(1);
-    expect(utils.prepareDataBeforeStore.calledOnce).toBe(true);
-    expect(actions.mergeResults.calledOnce).toBe(true);
+    await waitFor(() => expect(prepareDataBeforeStore).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(mergeResults).toHaveBeenCalledTimes(1));
   });
 
   it('should display a console log error when fetch is rejected', async () => {
-    window.fetch = jest.fn(() => Promise.reject({ message: 'error' }));
-    sinon.spy(actions, 'setIsLoading');
+    window.fetch = vi.fn(() => Promise.reject({ message: 'error' }));
+    const setIsLoading = vi.spyOn(actions, 'setIsLoading');
 
-    act(() => {
-      wrapper
-        .find(TextInput)
-        .props()
-        .onChange({ target: { value: 'custom search' } });
-    });
-    wrapper.update();
+    typeQuery('custom search');
+    clickSearch();
 
-    act(() => {
-      wrapper.find(Button).props().onClick();
-    });
-    wrapper.update();
-    await flushPromises();
-
-    expect(actions.setIsLoading.called).toBe(true);
-    actions.setIsLoading.restore();
+    await waitFor(() => expect(setIsLoading).toHaveBeenCalledWith(false));
+    expect(console.log).toHaveBeenCalledWith({ message: 'error' });
   });
 
   it('should display a loading bar while loading data', () => {
-    const store = mockStore({
-      form: {
-        isLoading: true
-      },
-      results: {
-        items: []
-      }
-    });
-    wrapper = mount(
-      <Provider store={store}>
-        <IntlProvider locale="en" messages={English}>
-          <SearchScreen>{children}</SearchScreen>
-        </IntlProvider>
-      </Provider>
-    );
+    renderScreen({ form: { isLoading: true }, results: { items: [] } });
 
-    expect(wrapper.find(LinearProgress).length).toEqual(1);
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
   });
 });

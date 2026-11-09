@@ -1,83 +1,54 @@
 import * as React from 'react';
-import { mount, shallow } from 'enzyme';
-import sinon from 'sinon';
-import { MenuItem, Select } from '@mui/material';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 
 import Dropdown from './Dropdown';
 
+const options = [
+  { label: 'test 1 ', value: 'test-1' },
+  { label: 'test 2', value: 'test-2' },
+  { label: 'test 3', value: 'test-3' }
+];
+
+const renderDropdown = (onChange = () => {}) =>
+  render(
+    <Dropdown
+      id="test-id"
+      groupName="test-group"
+      options={options}
+      selected="test-1"
+      groupLabel="test-group"
+      onChange={onChange}
+    />
+  );
+
+// MUI 5 Select renders a div[aria-haspopup=listbox] trigger; mouseDown opens the menu
+const openMenu = (container) =>
+  fireEvent.mouseDown(container.querySelector('[aria-haspopup="listbox"]'));
+
 describe('Dropdown [Component]', () => {
-  let wrapper;
-
-  beforeEach(() => {
-    wrapper = mount(
-      <Dropdown
-        id="test-id"
-        groupName="test-group"
-        options={[
-          { label: 'test 1 ', value: 'test-1' },
-          { label: 'test 2', value: 'test-2' },
-          { label: 'test 3', value: 'test-3' }
-        ]}
-        selected="test-1"
-        groupLabel="test-group"
-        onChange={(event) => {
-          console.log('button clicked');
-        }}
-      />
-    );
-  });
-
   it('should render', () => {
-    expect(wrapper).not.toBe(null);
-    expect(wrapper).not.toBe(undefined);
+    const { container } = renderDropdown();
+    expect(container.querySelector('#test-id')).toBeInTheDocument();
   });
 
   it('should have the next props: id, groupName, options, groupLabel, onChange, selected', () => {
-    expect(wrapper.props().id).toBeTruthy();
-    expect(wrapper.props().groupName).toBeTruthy();
-    expect(wrapper.props().options).toBeTruthy();
-    expect(wrapper.props().groupLabel).toBeTruthy();
-    expect(wrapper.props().onChange).toBeTruthy();
-    expect(wrapper.props().selected).toBeTruthy();
+    const { container } = renderDropdown();
+    expect(container.querySelector('#test-id-label')).toHaveTextContent('test-group');
+    expect(container.querySelector('#test-id')).toHaveTextContent('test 1');
+    expect(container.querySelector('input')).toHaveValue('test-1');
   });
 
   it('should have a list of MenuItem elements', () => {
-    wrapper = shallow(
-      <Dropdown
-        id="test-id"
-        groupName="test-group"
-        options={[
-          { label: 'test 1 ', value: 'test-1' },
-          { label: 'test 2', value: 'test-2' },
-          { label: 'test 3', value: 'test-3' }
-        ]}
-        selected="test-1"
-        groupLabel="test-group"
-        onChange={(event) => {
-          console.log('button clicked');
-        }}
-      />
-    );
-    expect(wrapper.find(MenuItem).length).toEqual(3);
+    const { container } = renderDropdown();
+    openMenu(container);
+    expect(within(screen.getByRole('listbox')).getAllByRole('option')).toHaveLength(3);
   });
 
   it('should execute onClick when called', () => {
-    const spyOnClick = sinon.spy();
-    wrapper = shallow(
-      <Dropdown
-        id="test-id"
-        groupName="test-group"
-        options={[
-          { label: 'test 1 ', value: 'test-1' },
-          { label: 'test 2', value: 'test-2' },
-          { label: 'test 3', value: 'test-3' }
-        ]}
-        selected="test-1"
-        groupLabel="test-group"
-        onChange={spyOnClick}
-      />
-    );
-    wrapper.find(Select).simulate('change');
-    expect(spyOnClick.calledOnce).toBe(true);
+    const onChange = vi.fn();
+    const { container } = renderDropdown(onChange);
+    openMenu(container);
+    fireEvent.click(screen.getByRole('option', { name: 'test 2' }));
+    expect(onChange).toHaveBeenCalledTimes(1);
   });
 });

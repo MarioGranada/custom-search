@@ -1,33 +1,33 @@
 import React from 'react';
-import { mount, shallow } from 'enzyme';
-import sinon from 'sinon';
-import { Box } from '@mui/material';
+import { render, screen, fireEvent } from '@testing-library/react';
 import FormWrapper from './FormWrapper';
 
-describe('Button [Component]', () => {
-  let wrapper;
+describe('FormWrapper [Component]', () => {
   const children = <div>this is a children test</div>;
+  let container;
+  let onKeyDown;
+
   beforeEach(() => {
-    wrapper = mount(<FormWrapper onKeyDown={() => {}}>{children}</FormWrapper>);
+    onKeyDown = vi.fn();
+    ({ container } = render(<FormWrapper onKeyDown={onKeyDown}>{children}</FormWrapper>));
   });
 
   it('should render', () => {
-    expect(wrapper).not.toBe(null);
-    expect(wrapper).not.toBe(undefined);
+    expect(container.querySelector('form')).toBeInTheDocument();
   });
 
   it('should have the next props: disabled, children, onClick', () => {
-    expect(wrapper.props().children).toBeTruthy();
+    expect(container.querySelector('form')).toContainElement(
+      screen.getByText('this is a children test')
+    );
   });
 
   it('should have a children as a React Node', () => {
-    expect(wrapper.props().children).toEqual(children);
+    expect(screen.getByText('this is a children test').tagName).toBe('DIV');
   });
 
   it('should execute onClick when called', () => {
-    const spyOnClick = sinon.spy();
-    wrapper = shallow(<FormWrapper onKeyDown={spyOnClick}>{children}</FormWrapper>);
-    wrapper.find(Box).simulate('keyDown');
-    expect(spyOnClick.calledOnce).toBe(true);
+    fireEvent.keyDown(container.querySelector('form'), { key: 'a' });
+    expect(onKeyDown).toHaveBeenCalledTimes(1);
   });
 });

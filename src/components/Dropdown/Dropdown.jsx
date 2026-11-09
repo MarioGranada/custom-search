@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { FormControl, Select, InputLabel, Box, MenuItem } from '@mui/material';
 
-import { DropdownItemProp } from './types';
+import type { DropdownItemProp } from './types';
 
 type Props = {
   id: string,

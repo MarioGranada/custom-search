@@ -2,18 +2,18 @@ const enginesData = {
   engines: {
     google: {
       queryParams: {
-        key: process.env.REACT_APP_GOOGLE_API_KEY,
-        cx: process.env.REACT_APP_GOOGLE_CX
+        key: import.meta.env.VITE_GOOGLE_API_KEY,
+        cx: import.meta.env.VITE_GOOGLE_CX
       },
       headers: {}
     },
     bing: {
       queryParams: {
-        customconfig: process.env.REACT_APP_BING_CUSTOM_CONFIG_ID,
+        customconfig: import.meta.env.VITE_BING_CUSTOM_CONFIG_ID,
         mkt: 'en-US'
       },
       headers: {
-        'Ocp-Apim-Subscription-Key': process.env.REACT_APP_BING_SUBSCRIPTION_KEY
+        'Ocp-Apim-Subscription-Key': import.meta.env.VITE_BING_SUBSCRIPTION_KEY
       }
     }
   }
