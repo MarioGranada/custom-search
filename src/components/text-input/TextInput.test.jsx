@@ -1,36 +1,32 @@
 import React from 'react';
-import { mount, shallow } from 'enzyme';
-import sinon from 'sinon';
-import { Box, TextField } from '@mui/material';
+import { render, screen, fireEvent } from '@testing-library/react';
 import TextInput from './TextInput';
 
-describe('Button [Component]', () => {
-  let wrapper;
-
-  beforeEach(() => {
-    wrapper = mount(<TextInput onChange={() => {}} placeholder="test placeholder" value="test" />);
-  });
-
+describe('TextInput [Component]', () => {
   it('should render', () => {
-    expect(wrapper).not.toBe(null);
-    expect(wrapper).not.toBe(undefined);
+    render(<TextInput onChange={() => {}} placeholder="test placeholder" value="test" />);
+    expect(screen.getByRole('searchbox')).toBeInTheDocument();
   });
 
   it('should have the next props: onChange, placeholder, value', () => {
-    expect(wrapper.props().onChange).toBeTruthy();
-    expect(wrapper.props().placeholder).toBeTruthy();
-    expect(wrapper.props().value).toBeTruthy();
+    render(<TextInput onChange={() => {}} placeholder="test placeholder" value="test" />);
+    const input = screen.getByRole('searchbox');
+    expect(input).toHaveAttribute('placeholder', 'test placeholder');
+    expect(input).toHaveValue('test');
   });
 
   it('should have a Box and a TextInput', () => {
-    expect(wrapper.find(Box).length).toEqual(1);
-    expect(wrapper.find(TextField).length).toEqual(1);
+    const { container } = render(
+      <TextInput onChange={() => {}} placeholder="test placeholder" value="test" />
+    );
+    expect(container.querySelectorAll('.MuiTextField-root')).toHaveLength(1);
+    expect(screen.getByLabelText('Search field')).toBe(screen.getByRole('searchbox'));
   });
 
   it('should execute onClick when called', () => {
-    const spyOnChange = sinon.spy();
-    wrapper = shallow(<TextInput onChange={spyOnChange} />);
-    wrapper.find(TextField).simulate('change');
-    expect(spyOnChange.calledOnce).toBe(true);
+    const onChange = vi.fn();
+    render(<TextInput onChange={onChange} value="" />);
+    fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'a' } });
+    expect(onChange).toHaveBeenCalledTimes(1);
   });
 });

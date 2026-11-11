@@ -1,6 +1,6 @@
 import * as React from 'react';
 import SingleResultItem from './single-result-item/SingleResultItem';
-import DataItem from './types';
+import type { DataItem } from './types';
 import { FormattedMessage } from 'react-intl';
 
 type Props = {

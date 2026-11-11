@@ -1,26 +1,25 @@
 import React from 'react';
-import { mount } from 'enzyme';
-import { Box } from '@mui/material';
+import { render, screen } from '@testing-library/react';
 import TopBar from './TopBar';
 
-describe('Button [Component]', () => {
-  let wrapper;
+describe('TopBar [Component]', () => {
   const children = <div>this is a children test</div>;
+  let container;
+
   beforeEach(() => {
-    wrapper = mount(<TopBar>{children}</TopBar>);
+    ({ container } = render(<TopBar>{children}</TopBar>));
   });
 
   it('should render', () => {
-    expect(wrapper).not.toBe(null);
-    expect(wrapper).not.toBe(undefined);
+    expect(container.firstChild).toBeInTheDocument();
   });
 
   it('should have the next props: children', () => {
-    expect(wrapper.props().children).toBeTruthy();
-    expect(wrapper.find(Box).length).toEqual(1);
+    expect(container.childNodes).toHaveLength(1);
+    expect(container.firstChild).toContainElement(screen.getByText('this is a children test'));
   });
 
   it('should have a children as a React Node', () => {
-    expect(wrapper.props().children).toEqual(children);
+    expect(screen.getByText('this is a children test').tagName).toBe('DIV');
   });
 });

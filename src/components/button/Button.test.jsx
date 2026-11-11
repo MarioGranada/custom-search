@@ -1,42 +1,32 @@
 import React from 'react';
-import { mount, shallow } from 'enzyme';
-import sinon from 'sinon';
-import { Box, Button } from '@mui/material';
+import { render, screen, fireEvent } from '@testing-library/react';
 import SearchButton from './Button';
 
 describe('Button [Component]', () => {
-  let wrapper;
   const children = <div>this is a children test</div>;
+  let onClick;
+
   beforeEach(() => {
-    wrapper = mount(
-      <SearchButton
-        onClick={() => {
-          console.log('button clicked');
-        }}>
-        {children}
-      </SearchButton>
-    );
+    onClick = vi.fn();
+    render(<SearchButton onClick={onClick}>{children}</SearchButton>);
   });
 
   it('should render', () => {
-    expect(wrapper).not.toBe(null);
-    expect(wrapper).not.toBe(undefined);
+    expect(screen.getByRole('button')).toBeInTheDocument();
   });
 
   it('should have the next props: disabled, children, onClick', () => {
-    expect(wrapper.props().onClick).toBeTruthy();
-    expect(wrapper.props().children).toBeTruthy();
-    expect(wrapper.props().disabled).toBeFalsy();
+    const button = screen.getByRole('button');
+    expect(button).toBeEnabled();
+    expect(button).toHaveTextContent('this is a children test');
   });
 
   it('should have a children as a React Node', () => {
-    expect(wrapper.props().children).toEqual(children);
+    expect(screen.getByText('this is a children test').tagName).toBe('DIV');
   });
 
   it('should execute onClick when called', () => {
-    const spyOnClick = sinon.spy();
-    wrapper = shallow(<SearchButton onClick={spyOnClick}>{children}</SearchButton>);
-    wrapper.find(Button).simulate('click');
-    expect(spyOnClick.calledOnce).toBe(true);
+    fireEvent.click(screen.getByRole('button'));
+    expect(onClick).toHaveBeenCalledTimes(1);
   });
 });
