@@ -18,7 +18,7 @@ import enginesList from '../../searchEngineConfig.json';
 import actions from '../../store/actions';
 import utils from '../../utils';
 
-const SearchScreen = (): React.Node => {
+const SearchScreen = (): React.ReactNode => {
   const [selected, setSelected] = React.useState('google');
   const [textValue, setTextValue] = React.useState('');
   const formState = useSelector((state) => state.form);
