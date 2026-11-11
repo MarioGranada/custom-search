@@ -7,27 +7,25 @@ Compact guide for future OpenCode sessions. It records only the facts an agent i
 | Command | Description |
 | --- | --- |
 | `yarn install` | Install dependencies. |
-| `yarn start` | Start CRA at http://localhost:3000. |
-| `yarn test` | Run the Jest suite. |
+| `yarn dev` | Start Vite at http://localhost:3000/custom-search/. |
+| `yarn test` | Run the Vitest suite once (`yarn test:watch` to watch). |
+| `yarn build` | Production build to `dist/`. |
 | `yarn lint` | Check ESLint. |
 
 ## Requirements
 
-- Node.js 18 or 20 (CRA 5 is legacy; newer Node versions may need `NODE_OPTIONS=--openssl-legacy-provider`).
-- Yarn 1.x (a `yarn.lock` is committed) or npm.
-- Google Custom Search API key and search-engine ID.
-- Bing Custom Search subscription key and custom-config ID.
+- Node.js 22.12+ (or 20.19+).
+- Yarn 1.x (a `yarn.lock` is committed).
+- Google Custom Search API key and search-engine ID. The JSON API is closed to new customers and shuts down on 2027-01-01.
 
 ## Environment
 
 - Create a `.env` file (or `.env.local` where the framework expects it) and set the variables. Never commit real secrets.
 
-  - `REACT_APP_GOOGLE_API_KEY` — Google Custom Search JSON API key.
-  - `REACT_APP_GOOGLE_CX` — Google Programmable Search Engine ID (cx).
-  - `REACT_APP_BING_CUSTOM_CONFIG_ID` — Bing Custom Search configuration ID.
-  - `REACT_APP_BING_SUBSCRIPTION_KEY` — Bing Search subscription key.
-- All browser-exposed variables must start with `REACT_APP_`.
-- Restart the dev server after changing `.env`; CRA inlines values at build time.
+  - `VITE_GOOGLE_API_KEY` — Google Custom Search JSON API key.
+  - `VITE_GOOGLE_CX` — Google Programmable Search Engine ID (cx).
+- All browser-exposed variables must start with `VITE_`; Vite inlines them at build time (public).
+- Restart the dev server after changing `.env`. `.env.test` (committed, dummy values) is loaded by Vitest.
 
 ## Architecture
 
@@ -40,13 +38,13 @@ Compact guide for future OpenCode sessions. It records only the facts an agent i
 ## Commands and build order
 
 - Run `yarn lint` and `yarn test` before finishing a change.
-- `yarn build` is the production gate; CRA fails the build on some lint errors.
-- There is no separate typecheck script; TypeScript is used sparingly in the search screen.
+- `yarn build` is the production gate.
+- There is no typecheck script or tsconfig; Vite strips TypeScript without checking it.
 
 ## Conventions and gotchas
 
-- CRA 5 is in maintenance mode; avoid adding new CRA-specific tooling.
-- The combined `google-bing` mode is a config-level combination, not a separate API.
+- Components use Flow annotations; `vite.config.mjs` strips them with `@rolldown/plugin-babel`. Type-only imports must use `import type`.
+- Bing was removed (Bing Search APIs retired Aug 2025). `combinations` in the engine config is empty but still supported.
 - Provider response shapes differ; keep normalisation in `prepareDataBeforeStore`.
 - Do not log credentials or full API responses in production code.
 

@@ -15,12 +15,12 @@ This document defines the non-negotiable foundations for this repository. Read i
 
 | Layer | Choice | Rationale |
 | --- | --- | --- |
-| Framework | React 17 (Create React App 5) | The project started as a CRA challenge; CRA provides the build, dev server, and test runner. |
+| Framework | React 17 + Vite 8 | Vite replaced the unmaintained Create React App for builds and the dev server. |
 | State | Redux + React Redux | Keeps the search form and normalised results independent of the screen component. |
 | UI | Material UI 5 + Emotion | Pre-built accessible inputs, buttons, and layout primitives. |
 | i18n | react-intl | Keeps user-facing copy out of components. |
-| HTTP | Fetch API | No extra HTTP dependency is needed for two JSON APIs. |
-| Testing | Jest + Enzyme + Testing Library | Unit coverage for the store and UI pieces. |
+| HTTP | Fetch API | No extra HTTP dependency is needed for a JSON API. |
+| Testing | Vitest + React Testing Library | Unit coverage for the store and UI pieces. |
 
 **Rule of thumb:** a new dependency must solve a concrete problem that the current stack cannot solve cleanly. Justify it in the change that introduces it.
 
@@ -32,7 +32,7 @@ A focused search-aggregator demo: one screen, a small Redux store, and a configu
 
 ### 2. Environment Isolation
 
-- The app reads these values from the environment: `REACT_APP_GOOGLE_API_KEY`, `REACT_APP_GOOGLE_CX`, `REACT_APP_BING_CUSTOM_CONFIG_ID`, `REACT_APP_BING_SUBSCRIPTION_KEY`.
+- The app reads these values from the environment: `VITE_GOOGLE_API_KEY`, `VITE_GOOGLE_CX`.
 - Keep real values in `.env` (gitignored) and document them in the example file and README.
 - Never commit keys, tokens, database URLs, or credentials.
 - Validate required values at the point of use and fail with a clear message.
@@ -59,11 +59,11 @@ A focused search-aggregator demo: one screen, a small Redux store, and a configu
 
 - `yarn lint`, `yarn test`, and `yarn build` are the quality gates.
 - Add or update a test when changing reducers, actions, or result mapping.
-- Manually verify each engine and the combined mode with real credentials.
+- Manually verify each engine with real credentials.
 
 ### 7. Deployment
 
-- Build with CRA and publish `build/` to GitHub Pages through Actions.
+- Build with Vite and publish `dist/` to GitHub Pages through Actions.
 - Keep API credentials in repository secrets, never in the workflow file.
 - Document the client-side key exposure and the server-proxy alternative.
 

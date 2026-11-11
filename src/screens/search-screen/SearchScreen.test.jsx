@@ -76,9 +76,11 @@ describe('Search [Screen]', () => {
 
   it('should call onSelect when selecting a value from dropdown', () => {
     fireEvent.mouseDown(container.querySelector('[aria-haspopup="listbox"]'));
-    fireEvent.click(screen.getByRole('option', { name: 'Bing' }));
+    // Google is the only engine since Bing Search APIs were retired (Aug 2025)
+    expect(screen.getAllByRole('option')).toHaveLength(1);
+    fireEvent.click(screen.getByRole('option', { name: 'Google' }));
 
-    expect(container.querySelector('[aria-haspopup="listbox"]')).toHaveTextContent('Bing');
+    expect(container.querySelector('[aria-haspopup="listbox"]')).toHaveTextContent('Google');
   });
 
   it('should call onTextChange when typing a query', () => {

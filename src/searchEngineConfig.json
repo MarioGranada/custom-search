@@ -11,32 +11,17 @@
       "offsetParam": "start",
       "defaultOffset": "1",
       "itemsPath": "items",
-      "itemProps": ["title", "snippet:overview", "link:url", "displayLink:displayUrl", "link:id", "kind"],
-      "queryParams": {},
-      "headers": {}
-    },
-    "bing": {
-      "method": "GET",
-      "label": "Bing",
-      "value": "bing",
-      "baseURL": "https://api.bing.microsoft.com/v7.0/custom/search?",
-      "totalResults": "webPages.totalEstimatedMatches",
-      "maxResults": "50",
-      "itemsPerPage": "10",
-      "offsetParam": "offset",
-      "defaultOffset": "0",
-      "itemsPath": "webPages.value",
-      "itemProps": ["name:title", "snippet:overview", "id", "url", "displayUrl"],
+      "itemProps": [
+        "title",
+        "snippet:overview",
+        "link:url",
+        "displayLink:displayUrl",
+        "link:id",
+        "kind"
+      ],
       "queryParams": {},
       "headers": {}
     }
   },
-  "combinations": {
-    "google-bing": {
-      "method": "GET",
-      "label": "Google & Bing",
-      "value": "google-bing",
-      "combinedEngines": ["google", "bing"]
-    }
-  }
+  "combinations": {}
 }
