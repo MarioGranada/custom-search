@@ -10,13 +10,14 @@ const resultsReducer = (state = initialState, action) => {
     case actionTypes.CLEAR_RESULTS:
       return initialState;
     case actionTypes.MERGE_RESULTS: {
-      const { query, currentEngine, items, totalResults } = action.payload;
+      const { query, currentEngine, items, page, hasMore } = action.payload;
       return {
         ...state,
         query,
         currentEngine,
+        page,
         items: [...state.items, ...items],
-        totalResults: state.totalResults + totalResults
+        hasMore: state.hasMore || hasMore
       };
     }
     default:

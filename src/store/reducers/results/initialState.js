@@ -2,7 +2,9 @@ const initialState = {
   query: '',
   currentEngine: '',
   items: [],
-  totalResults: 0
+  page: 1,
+  hasMore: false,
+  error: null
 };
 
 export default initialState;

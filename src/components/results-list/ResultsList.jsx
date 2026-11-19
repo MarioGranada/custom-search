@@ -1,26 +1,32 @@
 import * as React from 'react';
+import { FormattedMessage } from 'react-intl';
+import { Typography } from '@mui/material';
 import SingleResultItem from './single-result-item/SingleResultItem';
 import type { DataItem } from './types';
-import { FormattedMessage } from 'react-intl';
 
 type Props = {
   items: Array<DataItem>,
-  totalResults: number
+  page: number,
+  perPage: number
 };
 
-const ResultsList = ({ items, totalResults }: Props): React.Node => (
-  <div>
-    <div>
-      <span>
-        <FormattedMessage id="components.resultsList.totalResults" />:{' '}
-      </span>
+const ResultsList = ({ items, page, perPage }: Props): React.Node => {
+  if (items.length === 0) return null;
+  const from = (page - 1) * perPage + 1;
 
-      {totalResults}
+  return (
+    <div>
+      <Typography color="text.secondary" variant="body2">
+        <FormattedMessage
+          id="components.resultsList.range"
+          values={{ from, to: from + items.length - 1, page }}
+        />
+      </Typography>
+      {items.map((item: DataItem) => (
+        <SingleResultItem {...item} key={item.id} />
+      ))}
     </div>
-    {items.map((item: DataItem) => (
-      <SingleResultItem {...item} key={item.id} />
-    ))}
-  </div>
-);
+  );
+};
 
 export default ResultsList;

@@ -5,32 +5,26 @@ import ResultsList from './ResultsList';
 import { resultsMock } from '../../mocks';
 import English from '../../lang/en.json';
 
+const renderList = (props) =>
+  render(
+    <IntlProvider locale="en" messages={English}>
+      <ResultsList items={resultsMock.items} page={1} perPage={10} {...props} />
+    </IntlProvider>
+  );
+
 describe('ResultsList [Component]', () => {
-  let container;
-
-  beforeEach(() => {
-    ({ container } = render(
-      <IntlProvider locale="en" messages={English}>
-        <ResultsList items={resultsMock.items} totalResults={resultsMock.items.length} />
-      </IntlProvider>
-    ));
-  });
-
-  it('should render', () => {
-    expect(container.firstChild).toBeInTheDocument();
-  });
-
-  it('should have the next props: items, totalResults', () => {
-    expect(screen.getAllByRole('heading', { level: 6 }).length).toBeGreaterThan(0);
-    expect(container.textContent).toContain(`${resultsMock.items.length}`);
-  });
-
-  it('should have a total results label displaying the total results value', () => {
-    expect(container.textContent.includes('Total Results: ')).toBe(true);
-    expect(container.textContent.includes(resultsMock.items.length)).toBe(true);
-  });
-
-  it('should have a list of single result items', () => {
+  it('renders one item per result', () => {
+    renderList();
     expect(screen.getAllByRole('heading', { level: 6 })).toHaveLength(resultsMock.items.length);
+  });
+
+  it('shows the result range for the current page', () => {
+    const { container } = renderList({ page: 3 });
+    expect(container.textContent).toContain('Results 21–25 · page 3');
+  });
+
+  it('renders nothing when there are no results', () => {
+    const { container } = renderList({ items: [] });
+    expect(container).toBeEmptyDOMElement();
   });
 });

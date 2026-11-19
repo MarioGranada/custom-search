@@ -1,12 +1,12 @@
 export const formMock = {
-  selectedEngine: 'google',
+  selectedEngine: 'brave',
   inputQuery: 'synack',
   isLoading: false
 };
 
 export const resultsMock = {
   query: 'synack',
-  currentEngine: 'google',
+  currentEngine: 'brave',
   items: [
     {
       title: 'Synack - Most Trusted Crowdsourced Penetration Testing Platform',
@@ -49,5 +49,7 @@ export const resultsMock = {
       id: 'https://www.synack.com/company/'
     }
   ],
-  totalResults: 5
+  page: 1,
+  hasMore: true,
+  error: null
 };

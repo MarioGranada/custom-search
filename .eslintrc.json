@@ -29,5 +29,23 @@
   "ignorePatterns": [
     "dist",
     "node_modules"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "api/**/*.js",
+        "scripts/**/*.mjs"
+      ],
+      "env": {
+        "node": true,
+        "browser": false
+      },
+      "globals": {
+        "fetch": "readonly",
+        "Response": "readonly",
+        "Headers": "readonly",
+        "AbortSignal": "readonly"
+      }
+    }
   ]
 }

@@ -1,24 +1,17 @@
 {
   "engines": {
-    "google": {
+    "brave": {
       "method": "GET",
-      "label": "Google",
-      "value": "google",
-      "baseURL": "https://www.googleapis.com/customsearch/v1?",
-      "totalResults": "searchInformation.totalResults",
-      "maxResults": "100",
+      "label": "Brave",
+      "value": "brave",
+      "baseURL": "/api/search?",
+      "maxPages": "10",
       "itemsPerPage": "10",
-      "offsetParam": "start",
+      "offsetParam": "page",
       "defaultOffset": "1",
       "itemsPath": "items",
-      "itemProps": [
-        "title",
-        "snippet:overview",
-        "link:url",
-        "displayLink:displayUrl",
-        "link:id",
-        "kind"
-      ],
+      "hasMorePath": "hasMore",
+      "itemProps": ["title", "overview", "url", "displayUrl", "id"],
       "queryParams": {},
       "headers": {}
     }

@@ -13,7 +13,6 @@ export default defineConfig({
     }),
     react(),
   ],
-  base: '/custom-search/',
   server: { port: 3000 },
   preview: { port: 3000 },
   build: { outDir: 'dist' },

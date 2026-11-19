@@ -1,7 +1,14 @@
 {
-    "screens.search.header" : "Custom Search",
-    "screens.search.textInputPlaceholder": "Type your query",
-    "screens.search.dropdownLabel": "Search engines",
-    "screens.search.searchButtonLabel": "Search",
-    "components.resultsList.totalResults": "Total Results"
+  "screens.search.header": "Custom Search",
+  "screens.search.textInputPlaceholder": "Type your query",
+  "screens.search.dropdownLabel": "Search engines",
+  "screens.search.searchButtonLabel": "Search",
+  "screens.search.noResults": "No results found.",
+  "screens.search.poweredBy": "Results by the Brave Search API.",
+  "components.resultsList.range": "Results {from}–{to} · page {page}",
+  "errors.daily_limit": "You reached today's search limit for this demo. Please try again tomorrow.",
+  "errors.monthly_limit": "This demo has used its monthly search quota. Please check back next month.",
+  "errors.upstream_rate_limited": "The search provider is busy. Please try again in a moment.",
+  "errors.not_configured": "Search is not configured on this deployment.",
+  "errors.generic": "Search failed. Please try again."
 }

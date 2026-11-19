@@ -1,13 +1,21 @@
 import prepareSearch from './prepareSearch';
 
 describe('prepareSearch url [Utils]', () => {
-  it('should elaborate the proper search url before fetch', () => {
-    // default Google offset is `start=1` (searchEngineConfig.json defaultOffset)
-    expect(prepareSearch('google', 'test')).toEqual({
-      searchURL:
-        'https://www.googleapis.com/customsearch/v1?key=google_key1&cx=google_key2&q=test&start=1',
+  it('targets the same-origin proxy with no credentials and page 1 by default', () => {
+    expect(prepareSearch('brave', 'test')).toEqual({
+      searchURL: '/api/search?q=test&page=1',
       method: 'GET',
       headers: {}
     });
+  });
+
+  it('encodes and normalises the query so identical searches share a cache entry', () => {
+    expect(prepareSearch('brave', '  React & Redux ', 2).searchURL).toBe(
+      '/api/search?q=react+%26+redux&page=2'
+    );
+  });
+
+  it('clamps the page to the engine maximum', () => {
+    expect(prepareSearch('brave', 'test', 99).searchURL).toBe('/api/search?q=test&page=10');
   });
 });

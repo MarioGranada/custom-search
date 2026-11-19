@@ -29,8 +29,7 @@ describe('Results [Reducer]', () => {
           overview: 'test mock result',
           url: 'https://www.example.com/',
           displayUrl: 'www.example.com',
-          id: 'https://www.example.com/',
-          kind: 'customsearch#result'
+          id: 'https://www.example.com/'
         }
       ]
     };
@@ -39,5 +38,13 @@ describe('Results [Reducer]', () => {
       resultsReducer({ ...resultsMock, isLoading: true }, actions.mergeResults(aggregatedMock))
         .items.length
     ).toEqual(resultsMock.items.length + 1);
+  });
+
+  it('should keep hasMore when any merged engine has more results', () => {
+    const state = resultsReducer(
+      { ...resultsMock, hasMore: false },
+      actions.mergeResults({ ...resultsMock, items: [], hasMore: true })
+    );
+    expect(state.hasMore).toBe(true);
   });
 });

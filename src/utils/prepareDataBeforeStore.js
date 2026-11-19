@@ -5,22 +5,17 @@ export const propByPath = (path, dataObj, separator = '.') => {
   return props.reduce((prev, curr) => prev && prev[curr], dataObj);
 };
 
+/** Normalises an engine response into `{ items, hasMore }` using the engine config. */
 const prepareDataBeforeStore = (engine, data) => {
-  const { totalResults: totalSearchResultsPath, itemsPath, itemProps } = initConfig.engines[engine];
-  const totalResults = propByPath(totalSearchResultsPath, data) || 0;
+  const { itemsPath, hasMorePath, itemProps } = initConfig.engines[engine];
   const itemsList = propByPath(itemsPath, data) || [];
-  let simplifiedItemsList = [];
-  if (itemsList && itemsList.length > 0) {
-    simplifiedItemsList = itemsList.map((item) => {
-      const simplifiedItem = {};
-      itemProps.map((prop) => {
-        const [propName, alias] = prop.split(':');
-        simplifiedItem[alias || propName] = item[propName];
-      });
-      return simplifiedItem;
-    });
-  }
-  return { totalResults: parseInt(totalResults, 10), items: simplifiedItemsList };
+  const items = itemsList.map((item) =>
+    itemProps.reduce((simplified, prop) => {
+      const [propName, alias] = prop.split(':');
+      return { ...simplified, [alias || propName]: item[propName] };
+    }, {})
+  );
+  return { items, hasMore: Boolean(propByPath(hasMorePath, data)) };
 };
 
 export default prepareDataBeforeStore;

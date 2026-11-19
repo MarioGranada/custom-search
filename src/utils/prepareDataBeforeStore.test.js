@@ -2,33 +2,23 @@ import prepareDataBeforeStore, { propByPath } from './prepareDataBeforeStore';
 import { resultsMock } from '../mocks';
 
 const { items } = resultsMock;
-
-const googleData = {
-  searchInformation: { totalResults: 5 },
-  items: resultsMock.items.map((item) => {
-    const { title, overview, url, displayUrl, kind } = item;
-    return {
-      title,
-      snippet: overview,
-      link: url,
-      displayLink: displayUrl,
-      kind
-    };
-  })
-};
+const apiResponse = { query: 'synack', page: 1, perPage: 10, hasMore: true, items };
 
 describe('prepareDataBeforeStore [Utils]', () => {
-  it('should return the data correctly parsed before storing', () => {
-    expect(prepareDataBeforeStore('google', googleData)).toEqual({ items, totalResults: 5 });
+  it('keeps the configured item props and the hasMore flag', () => {
+    expect(prepareDataBeforeStore('brave', apiResponse)).toEqual({ items, hasMore: true });
   });
 
-  it('should return no items when empty data is passed', () => {
-    expect(prepareDataBeforeStore('google', {})).toEqual({ totalResults: 0, items: [] });
+  it('drops props that are not configured', () => {
+    const withExtra = { ...apiResponse, items: [{ ...items[0], raw: 'x' }] };
+    expect(prepareDataBeforeStore('brave', withExtra).items[0]).not.toHaveProperty('raw');
   });
 
-  it('should pars data when path is an array', () => {
-    expect(propByPath(['searchInformation', 'totalResults'], googleData)).toEqual(
-      googleData.searchInformation.totalResults
-    );
+  it('returns no items when empty data is passed', () => {
+    expect(prepareDataBeforeStore('brave', {})).toEqual({ items: [], hasMore: false });
+  });
+
+  it('reads nested values when the path is an array', () => {
+    expect(propByPath(['a', 'b'], { a: { b: 3 } })).toEqual(3);
   });
 });

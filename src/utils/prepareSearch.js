@@ -1,38 +1,23 @@
 import initConfig from '../searchEngineConfig.json';
-import enginesData from './loadEngines';
 
-const loadEngineConfig = (engine) => {
-  return {
-    ...initConfig.engines[engine],
-    ...enginesData.engines[engine]
-  };
-};
+/**
+ * Builds the request for one engine. Engines are reached through same-origin
+ * proxies (see `api/`), so no credentials are added on the client.
+ * `page` is 1-based and clamped to the engine's `maxPages`.
+ */
+const prepareSearch = (engine, query, page) => {
+  const { baseURL, method, queryParams, headers, defaultOffset, offsetParam, maxPages } =
+    initConfig.engines[engine];
 
-const prepareSearch = (engine, query, offsetValue) => {
-  const {
-    baseURL,
-    method,
-    queryParams,
-    headers,
-    defaultOffset,
-    offsetParam,
-    maxResults,
-    itemsPerPage
-  } = loadEngineConfig(engine);
-  let searchURL = baseURL;
-  Object.keys(queryParams).forEach((item) => {
-    searchURL += `${item}=${queryParams[item]}&`;
-  });
-  console.log('in here offsetvalue', offsetValue);
-  // searchURL += `q=${query}`;
-  const calculatedOffset = offsetValue ? offsetValue : parseInt(defaultOffset); // Checks both null or undefined. offsetValue can be zero (0).
-  const maxOffset = parseInt(maxResults) - parseInt(itemsPerPage);
-  const validatedOffset = calculatedOffset > maxOffset ? maxOffset : calculatedOffset;
+  const requested = Number.isInteger(page) && page > 0 ? page : parseInt(defaultOffset, 10);
+  const validatedPage = Math.min(requested, parseInt(maxPages, 10));
 
-  searchURL += `q=${query}&${offsetParam}=${validatedOffset}`;
+  const params = new URLSearchParams(queryParams);
+  params.set('q', query.trim().toLowerCase());
+  params.set(offsetParam, String(validatedPage));
 
   return {
-    searchURL,
+    searchURL: `${baseURL}${params}`,
     method,
     headers
   };

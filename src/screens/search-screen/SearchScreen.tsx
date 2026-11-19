@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Box, Container, LinearProgress, Typography } from '@mui/material';
+import { Alert, Box, Container, LinearProgress, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 
 import {
@@ -18,98 +18,109 @@ import enginesList from '../../searchEngineConfig.json';
 import actions from '../../store/actions';
 import utils from '../../utils';
 
+const MIN_QUERY_LENGTH = 3;
+// Error codes returned by the /api proxies that have a dedicated message.
+const KNOWN_ERRORS = new Set([
+  'daily_limit',
+  'monthly_limit',
+  'upstream_rate_limited',
+  'not_configured'
+]);
+
+class SearchError extends Error {
+  code: string;
+
+  constructor(code: string) {
+    super(code);
+    this.code = code;
+  }
+}
+
 const SearchScreen = (): React.ReactNode => {
-  const [selected, setSelected] = React.useState('google');
+  const [selected, setSelected] = React.useState('brave');
   const [textValue, setTextValue] = React.useState('');
+  const [submittedQuery, setSubmittedQuery] = React.useState('');
   const formState = useSelector((state) => state.form);
   const resultsState = useSelector((state) => state.results);
-  const [currentPage, setCurrentPage] = React.useState(0);
 
   const dispatch = useDispatch();
 
-  const onFetchResults = React.useCallback(
-    (selectedEngine: string, query: string, offset?: number) => {
-      async function fetchSearchResults(selectedEngine: string, query: string, offset?: number) {
-        try {
-          const { searchURL, method, headers } = utils.prepareSearch(selectedEngine, query, offset);
-          const response = await fetch(searchURL, { method, headers });
-          const jsonResponse = await response.json();
+  const selectedEngines = React.useMemo(() => selected.split('-'), [selected]);
 
-          const { totalResults, items } = utils.prepareDataBeforeStore(
-            selectedEngine,
-            jsonResponse
-          );
+  /** Fetches one page from every selected engine and stores the merged results. */
+  const runSearch = React.useCallback(
+    async (query: string, page: number) => {
+      dispatch(actions.clearResults());
+      dispatch(actions.setIsLoading(true));
+      try {
+        await Promise.all(
+          selectedEngines.map(async (engine) => {
+            const { searchURL, method, headers } = utils.prepareSearch(engine, query, page);
+            const response = await fetch(searchURL, { method, headers });
+            const body = await response.json().catch(() => ({}));
+            if (!response.ok) throw new SearchError(body?.error || 'generic');
 
-          dispatch(actions.mergeResults({ totalResults, items }));
-        } catch (error) {
-          console.log(error);
-        } finally {
-          dispatch(actions.setIsLoading(false));
-        }
+            const { items, hasMore } = utils.prepareDataBeforeStore(engine, body);
+            dispatch(actions.mergeResults({ query, currentEngine: engine, page, items, hasMore }));
+          })
+        );
+      } catch (error) {
+        console.error(error);
+        const code = KNOWN_ERRORS.has(error?.code) ? error.code : 'generic';
+        dispatch(actions.updateResults({ error: code }));
+      } finally {
+        dispatch(actions.setIsLoading(false));
       }
-      console.log('in here offset onfetchresutls', offset);
-      fetchSearchResults(selectedEngine, query, currentPage);
     },
-    [dispatch]
-  );
-
-  const onPageChange = React.useCallback(
-    (event, value) => {
-      console.log('in here onPageChange', value);
-      setCurrentPage(value);
-      onSubmit();
-    },
-    [setCurrentPage, selected, currentPage, textValue]
-  );
-
-  // add event Syntetic type
-  const onSelect = React.useCallback(
-    (event) => {
-      setSelected(event.target.value);
-    },
-    [setSelected]
-  );
-
-  const onTextChange = React.useCallback(
-    (event) => {
-      setTextValue(event.target.value);
-    },
-    [setTextValue]
+    [dispatch, selectedEngines]
   );
 
   const onSubmit = React.useCallback(() => {
-    dispatch(actions.clearResults());
-    dispatch(actions.setIsLoading(true));
-    const selectedEngines = selected.split('-');
-    selectedEngines.map((item) => {
-      onFetchResults(item, textValue, currentPage);
-    });
-  }, [selected, textValue, currentPage]);
+    const query = textValue.trim();
+    if (query.length < MIN_QUERY_LENGTH || formState.isLoading) return;
+    setSubmittedQuery(query);
+    runSearch(query, 1);
+  }, [textValue, formState.isLoading, runSearch]);
 
-  const enginesListDisplayItems = React.useMemo(() => {
-    const engines = { ...enginesList.engines, ...enginesList.combinations };
-    return Object.entries(engines).map(([, { label, value }]) => ({
-      label,
-      value
-    }));
-  }, [enginesList]);
+  const onPageChange = React.useCallback(
+    (_event, page: number) => {
+      runSearch(submittedQuery, page);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+    [runSearch, submittedQuery]
+  );
 
-  const maxPagesResultsCount = React.useMemo(() => {
-    const selectedEngines = selected.split('-');
-    return selectedEngines.reduce(
-      (prev, current) => prev + parseInt(enginesList.engines[current].maxResults),
-      0
-    );
-  }, [selected]);
+  const onSelect = React.useCallback((event) => setSelected(event.target.value), []);
+  const onTextChange = React.useCallback((event) => setTextValue(event.target.value), []);
 
   const onKeyDown = React.useCallback(
     (event) => {
       if (event.key === 'Enter') {
+        event.preventDefault();
         onSubmit();
       }
     },
     [onSubmit]
   );
+
+  const enginesListDisplayItems = React.useMemo(() => {
+    const engines = { ...enginesList.engines, ...enginesList.combinations };
+    return Object.values(engines).map(({ label, value }) => ({ label, value }));
+  }, []);
+
+  const { maxPages, perPage } = React.useMemo(() => {
+    const configs = selectedEngines.map((engine) => enginesList.engines[engine]);
+    return {
+      maxPages: Math.min(...configs.map((c) => parseInt(c.maxPages, 10))),
+      perPage: configs.reduce((sum, c) => sum + parseInt(c.itemsPerPage, 10), 0)
+    };
+  }, [selectedEngines]);
+
+  const { items, page, hasMore, error } = resultsState;
+  // No provider reports a total, so reveal one page ahead while more results exist.
+  const pageCount = Math.min(maxPages, page + (hasMore ? 1 : 0));
+  const showNoResults =
+    submittedQuery !== '' && !formState.isLoading && !error && items.length === 0;
 
   return (
     <Container maxWidth="lg">
@@ -140,20 +151,43 @@ const SearchScreen = (): React.ReactNode => {
               )}
             </FormattedMessage>
 
-            <Button onClick={onSubmit} disabled={textValue.length < 3 || formState.isLoading}>
+            <Button
+              onClick={onSubmit}
+              disabled={textValue.trim().length < MIN_QUERY_LENGTH || formState.isLoading}
+            >
               <FormattedMessage id="screens.search.searchButtonLabel" />
             </Button>
           </FormWrapper>
         </TopBar>
-        {!formState.isLoading && resultsState.items.length && (
+
+        {formState.isLoading && <LinearProgress />}
+
+        {error && (
+          <Alert severity="warning" sx={{ my: '1rem' }}>
+            <FormattedMessage id={`errors.${error}`} />
+          </Alert>
+        )}
+
+        {showNoResults && (
+          <Typography sx={{ my: '1rem' }}>
+            <FormattedMessage id="screens.search.noResults" />
+          </Typography>
+        )}
+
+        {!formState.isLoading && <ResultsList items={items} page={page} perPage={perPage} />}
+
+        {items.length > 0 && (
           <Pagination
+            page={page}
+            pageCount={pageCount}
             onChange={onPageChange}
-            currentPage={currentPage}
-            maxPages={maxPagesResultsCount}
+            disabled={formState.isLoading}
           />
         )}
 
-        {formState.isLoading ? <LinearProgress /> : <ResultsList {...resultsState} />}
+        <Typography variant="caption" color="text.secondary" component="p" sx={{ my: '2rem' }}>
+          <FormattedMessage id="screens.search.poweredBy" />
+        </Typography>
       </Box>
     </Container>
   );
