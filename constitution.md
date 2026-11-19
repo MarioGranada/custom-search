@@ -20,6 +20,7 @@ This document defines the non-negotiable foundations for this repository. Read i
 | UI | Material UI 5 + Emotion | Pre-built accessible inputs, buttons, and layout primitives. |
 | i18n | react-intl | Keeps user-facing copy out of components. |
 | HTTP | Fetch API | No extra HTTP dependency is needed for a JSON API. |
+| API proxy | Vercel Function + postgres.js | Keeps the Brave key server-side and enforces usage caps in the shared Supabase Postgres. |
 | Testing | Vitest + React Testing Library | Unit coverage for the store and UI pieces. |
 
 **Rule of thumb:** a new dependency must solve a concrete problem that the current stack cannot solve cleanly. Justify it in the change that introduces it.
@@ -32,8 +33,8 @@ A focused search-aggregator demo: one screen, a small Redux store, and a configu
 
 ### 2. Environment Isolation
 
-- The app reads these values from the environment: `VITE_GOOGLE_API_KEY`, `VITE_GOOGLE_CX`.
-- Keep real values in `.env` (gitignored) and document them in the example file and README.
+- Provider keys and secrets are server-side only (`BRAVE_SEARCH_API_KEY`, `RATE_LIMIT_SALT`, `POSTGRES_URL`), read by `api/`. The client bundle has no env vars; never add a `VITE_`-prefixed secret.
+- Keep real values in Vercel env vars and `.env.local` (gitignored); document them in `.env.example` and the README.
 - Never commit keys, tokens, database URLs, or credentials.
 - Validate required values at the point of use and fail with a clear message.
 
@@ -46,7 +47,7 @@ A focused search-aggregator demo: one screen, a small Redux store, and a configu
 ### 4. Data and State
 
 - Search results are normalised before entering Redux; do not store raw provider payloads.
-- Pagination state lives in the screen and is passed to the request builder.
+- Pagination state lives in the screen and is passed to the request builder; pages are 1-based and paging always uses the submitted query.
 - No persistence: refreshing the page clears results.
 
 ### 5. Styling and UX
@@ -63,13 +64,13 @@ A focused search-aggregator demo: one screen, a small Redux store, and a configu
 
 ### 7. Deployment
 
-- Build with Vite and publish `dist/` to GitHub Pages through Actions.
-- Keep API credentials in repository secrets, never in the workflow file.
-- Document the client-side key exposure and the server-proxy alternative.
+- Deploy to Vercel: Vite builds the UI and `api/` becomes Vercel Functions; pushing `main` deploys.
+- Every provider call goes through a proxy that validates input, enforces the daily and monthly caps before spending credit, and returns only error codes to the client.
+- Successful searches are CDN-cached (`s-maxage`), errors are `no-store`.
 
 ## What to Avoid
 
-- Committing `.env` or `.env.test`.
+- Committing `.env` or `.env.local`, or exposing a provider key through a `VITE_` variable.
 - Adding provider-specific branching inside presentational components.
 - Storing raw API responses in Redux.
 - Assuming a provider always returns results or the same field names.

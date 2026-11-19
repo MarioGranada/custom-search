@@ -1,36 +1,36 @@
 # Custom Search — Working Memory
 
-_Last updated: 2026-11-12_
+_Last updated: 2026-11-19_
 
 ## Current status
 
-- Google is the only engine; Bing was removed (APIs retired Aug 2025).
-- Migrated from CRA to Vite 8 + Vitest 5 (2026-11); deployed to GitHub Pages via Actions.
-- Redux store, MUI layout, i18n copy, and unit tests are in place.
-- Pagination is partially wired; the original README still lists result-count and deeper pagination as pending.
+- Live on Vercel: https://custom-search-seven.vercel.app (project `custom-search`). The old GitHub Pages URL redirects there.
+- Brave Search API is the only engine, called through `api/search.js` (Vercel Function); the key is server-side.
+- Pagination works: 1-based, 10 per page, next page revealed while Brave reports `hasMore` (max 10 pages).
+- Quota guard in the shared Supabase Postgres (schema `custom_search`): 40/visitor/day, 900/month; CDN caches repeats for a day.
 
 ## Key decisions
 
-- Kept engine definitions data-driven in `searchEngineConfig.json` so new providers are additive.
-- Moved off CRA to Vite; enzyme tests were ported to React Testing Library.
+- Google removed: Custom Search JSON API closed to new customers, shuts down 2027-01-01. Bing retired Aug 2025.
+- Proxy instead of client keys: Pages could only ship keys in the public bundle.
+- Brave is prepaid ($5 free credit/month, ~1,000 requests); the monthly cap keeps the demo inside it.
+- Engine definitions stay data-driven in `searchEngineConfig.json`, now pointing at same-origin proxies.
 
 ## Known limitations and follow-ups
 
-- API keys are exposed in the client bundle.
-- Only the first provider page is shown.
-- Google Custom Search JSON API is closed to new customers and shuts down 2027-01-01; this project's key gets 403 ACCESS_DENIED. Needs a replacement provider.
+- UI/UX pass pending: long code snippets render as plain text, results disappear while the next page loads.
+- Brave sometimes returns fewer than 10 results per page.
+- The TS refactor WIP lives in `git stash@{0}`; rebase it onto the new SearchScreen before applying.
 
 ## Mistakes to avoid
 
-- Browser env vars need the `VITE_` prefix.
+- Never add a `VITE_`-prefixed secret; the client needs no env vars.
+- `yarn dev` alone has no API; use `vercel dev` for end-to-end local runs.
 - `yarn test` runs once; use `yarn test:watch` to watch.
-- Restart the dev server after env changes.
 
 ## Next steps
 
-- Finish result-count and pagination behaviour.
-- Add a small server proxy to protect provider keys.
-- Replace the Google JSON API before 2027-01-01.
+- UI/UX improvements (loading state, snippet presentation, empty states).
 
 ---
 
